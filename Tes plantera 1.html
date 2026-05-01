@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plantera Digital Companion</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        body { font-family: 'Fredoka', sans-serif; background-color: #FDFBF7; color: #3B5F54; overflow-x: hidden; }
+        .sage-bg { background-color: #8A9A5B; }
+        .sage-text { color: #8A9A5B; }
+        .card-shadow { box-shadow: 0 10px 25px -5px rgba(59, 95, 84, 0.1); }
+        .step-card { display: none; }
+        .active { display: block; animation: fadeIn 0.5s ease; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .float-anim { animation: floating 3s ease-in-out infinite; }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="max-w-md mx-auto min-h-screen relative">
+
+    <!-- HEADER -->
+    <header class="p-6 flex justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 sage-bg rounded-lg flex items-center justify-center text-white font-bold">P</div>
+            <span class="font-bold tracking-tighter text-xl">PLANTERA</span>
+        </div>
+        <div id="top-stats" class="hidden flex gap-3">
+            <span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full font-bold">🔥 <span id="val-streak">0</span></span>
+            <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full font-bold">⭐ Lvl <span id="val-level">1</span></span>
+        </div>
+    </header>
+
+    <!-- 1. SCREEN SCANNER -->
+    <section id="step-1" class="step-card active p-6 text-center">
+        <div class="bg-white p-8 rounded-[40px] card-shadow mb-8 mt-4">
+            <div id="reader" class="rounded-3xl overflow-hidden bg-gray-100 mb-6"></div>
+            <h2 class="text-2xl font-bold mb-2">Pindai Kode QR</h2>
+            <p class="text-sm text-gray-500 mb-6">Langkah 2: Aktifkan karakter tanaman AI Anda sekarang.</p>
+            <button onclick="mockScan()" class="text-xs text-sage-text font-medium border-b border-sage-bg italic">
+                Klik di sini jika ingin simulasi tanpa kamera
+            </button>
+        </div>
+    </section>
+
+    <!-- 2. SCREEN UNBOXING (Referencing IMG_6363.jpg) -->
+    <section id="step-2" class="step-card p-6">
+        <h2 class="text-xl font-bold mb-4 text-center">Petunjuk Menanam 🌿</h2>
+        <div class="grid grid-cols-1 gap-4">
+            <div class="bg-white p-4 rounded-2xl card-shadow flex gap-4 items-center border-l-4 border-yellow-400">
+                <span class="text-2xl">📦</span>
+                <div>
+                    <h4 class="font-bold text-sm text-yellow-700">1. Cek Surprise</h4>
+                    <p class="text-[11px] text-gray-500 italic">Buka kartu unboxing untuk tahu jenis suculentmu.</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl card-shadow flex gap-4 items-center border-l-4 border-sage-bg">
+                <span class="text-2xl">🍯</span>
+                <div>
+                    <h4 class="font-bold text-sm sage-text">2. Siapkan Pot</h4>
+                    <p class="text-[11px] text-gray-500">Masukkan media tanam ke dalam pot cantikmu.</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl card-shadow flex gap-4 items-center border-l-4 border-sage-bg">
+                <span class="text-2xl">🌸</span>
+                <div>
+                    <h4 class="font-bold text-sm sage-text">3. Masukkan Sukulen</h4>
+                    <p class="text-[11px] text-gray-500">Letakkan sukulen imut tepat di tengah pot.</p>
+                </div>
+            </div>
+        </div>
+        <button onclick="nextStep(3)" class="w-full mt-8 sage-bg text-white py-4 rounded-2xl font-bold shadow-lg">
+            Selesai Menanam! Lanjut ke Digital Buddy
+        </button>
+    </section>
+
+    <!-- 3. SCREEN DASHBOARD (Referencing IMG_6364.jpg) -->
+    <section id="step-3" class="step-card p-6">
+        <!-- Fun Fact Box -->
+        <div class="bg-white p-4 rounded-3xl card-shadow border border-sage-bg/20 relative mb-12">
+            <div class="absolute -bottom-3 left-10 w-6 h-6 bg-white border-b border-r border-sage-bg/20 rotate-45"></div>
+            <p class="text-[11px] font-bold text-gray-400 mb-1 tracking-widest uppercase">Fun Fact & Wawasan AI</p>
+            <p id="fun-fact" class="text-sm leading-relaxed text-gray-700 italic">
+                "Halo! Aku senang sekali sudah ditanam. Jangan lupa beri aku sinar matahari tidak langsung ya!"
+            </p>
+        </div>
+
+        <!-- Character Area -->
+        <div class="flex flex-col items-center py-4">
+            <div class="relative">
+                <div class="w-56 h-56 rounded-full bg-gradient-to-b from-[#C2D5A8] to-sage-bg flex items-center justify-center float-anim shadow-2xl">
+                    <img id="char-img" src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=plantera&backgroundColor=8A9A5B" class="w-40 h-40 drop-shadow-lg" alt="Character">
+                </div>
+                <div class="absolute -bottom-4 bg-white px-6 py-2 rounded-full shadow-lg font-bold text-sage-text">
+                    Lvl <span id="dash-level">1</span>
+                </div>
+            </div>
+            
+            <h3 class="mt-10 text-2xl font-bold" id="dash-name">Maniferia AI</h3>
+            <p class="text-xs text-gray-400">Status: Bahagia & Tumbuh</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="mt-10">
+            <div class="flex justify-between text-[10px] mb-2 font-bold uppercase tracking-widest opacity-60">
+                <span>Growth Progress</span>
+                <span id="xp-text">0 / 100 XP</span>
+            </div>
+            <div class="w-full h-4 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+                <div id="xp-bar" class="h-full bg-gradient-to-r from-yellow-400 to-sage-bg transition-all duration-700" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <button onclick="giveCare()" class="w-full mt-8 bg-white border-2 border-sage-bg text-sage-bg py-5 rounded-[24px] font-bold shadow-sm hover:sage-bg hover:text-white transition-all flex items-center justify-center gap-3 active:scale-95">
+            <i class="fa-solid fa-droplet"></i> Beri Perawatan Harian
+        </button>
+        <p class="text-center text-[10px] mt-4 opacity-50 uppercase tracking-tighter italic">Dari Plantera, Dengan Cinta 🐾</p>
+    </section>
+
+    <script>
+        // LOGIC & DATA
+        let userData = JSON.parse(localStorage.getItem('plantera_user')) || {
+            hasScanned: false,
+            level: 1,
+            xp: 0,
+            streak: 0,
+            lastCare: null,
+            charType: 'Maniferia'
+        };
+
+        const aiFacts = [
+            "Langkah 5: Beri sinar matahari tidak langsung agar warnaku tetap cantik!",
+            "Aku suka disiram secukupnya saja saat media tanam sudah kering.",
+            "Tahukah kamu? Menanam sukulen bisa bantu kurangi stress loh!",
+            "Taburkan batu dekorasi (Langkah 4) agar aku semakin imut di potmu.",
+            "Wawasan Hari Ini: Aku bisa bertahan hidup meski lupa disiram beberapa hari."
+        ];
+
+        // INITIALIZE
+        function init() {
+            if (userData.hasScanned) {
+                nextStep(3);
+                updateDisplay();
+            } else {
+                startScanner();
+            }
+        }
+
+        // SCANNER LOGIC
+        function startScanner() {
+            const scanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: 250 });
+            scanner.render((decodedText) => {
+                alert("QR Berhasil diaktifkan: " + decodedText);
+                scanner.clear();
+                nextStep(2);
+            });
+        }
+
+        function mockScan() {
+            userData.hasScanned = true;
+            save();
+            nextStep(2);
+        }
+
+        // NAVIGATION
+        function nextStep(stepNum) {
+            document.querySelectorAll('.step-card').forEach(s => s.classList.remove('active'));
+            document.getElementById('step-' + stepNum).classList.add('active');
+            
+            if (stepNum === 3) {
+                document.getElementById('top-stats').classList.remove('hidden');
+                updateDisplay();
+            }
+        }
+
+        // GAMIFICATION LOGIC
+        function giveCare() {
+            const today = new Date().toDateString();
+            if (userData.lastCare === today) {
+                alert("Kamu sudah merawatku hari ini! Sampai jumpa besok!");
+                return;
+            }
+
+            userData.xp += 35;
+            userData.lastCare = today;
+            userData.streak += 1;
+
+            if (userData.xp >= 100) {
+                userData.level += 1;
+                userData.xp = 0;
+                alert("Hore! Level Tumbuh Meningkat! Karaktermu berevolusi.");
+            }
+
+            // Ganti Fun Fact
+            const rand = Math.floor(Math.random() * aiFacts.length);
+            document.getElementById('fun-fact').innerText = aiFacts[rand];
+
+            save();
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            document.getElementById('val-streak').innerText = userData.streak;
+            document.getElementById('val-level').innerText = userData.level;
+            document.getElementById('dash-level').innerText = userData.level;
+            document.getElementById('dash-name').innerText = userData.charType + " Lvl." + userData.level;
+            document.getElementById('xp-text').innerText = userData.xp + " / 100 XP";
+            document.getElementById('xp-bar').style.width = userData.xp + "%";
+            
+            // Ubah Ikon Karakter kalau Level Naik
+            if (userData.level >= 3) {
+                document.getElementById('char-img').src = "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=plantera-high&backgroundColor=8A9A5B";
+            }
+        }
+
+        function save() {
+            localStorage.setItem('plantera_user', JSON.stringify(userData));
+        }
+
+        init();
+    </script>
+</body>
+</html>
